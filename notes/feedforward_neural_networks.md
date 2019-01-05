@@ -1,4 +1,4 @@
-# Part 1: Feedforward Neural Network
+# Feedforward Neural Networks
 ### By: Collin Brown 
 
 ### Contents:
@@ -135,8 +135,7 @@ $$
 * Our aim is to __choose the parameters__ of $\mathscr{L}$ in such a way to minimize the value that $\mathscr{L}$ takes on (i.e. "minimize the loss function").
 $$
 \min_{\mathbf{\theta}}  \mathscr{L}\Big( \big( \mathbf{x}_{(i)}, \mathbf{y}_{(i)}\big)_{i=1}^N ; \mathbf{\theta} \Big)
-\$$
-
+$$
 * The surface of $\mathscr{L}$ exists in some high dimensional parameter space.
 
 --> Insert figure or draw on board
@@ -148,13 +147,17 @@ $$
 * Starting from a random point on $\mathscr{L}$ (i.e. given a random set of parameters $\mathbf{\theta}$), for each parameter $\theta_i \in \mathscr{\theta}$, we can calculate $\frac{\partial \mathscr{L}}{\partial \theta_i}$.
 
 * Since $(-1) \nabla \mathscr{L}$ points in the direction of steepest descent, we're "pushing" each parameter $\theta_i$ in such a way that after applying the following update rule:
+
 $$
-\theta_i' := \theta_i - \eta \frac{\partial \mathscr{L}}{\partial \theta_i} 
+\theta_i' := \theta_i - \eta \frac{\partial \mathscr{L}}{\partial \theta_i}
 $$
+
+* we are guaranteed the following for an arbitrarily small change in $\theta_i'$: 
 
 $$
 \mathscr{L}\Big( \big( \mathbf{x}_{(i)}, \mathbf{y}_{(i)}\big)_{i=1}^N ; \mathbf{\theta}' \Big) \leq \mathscr{L}\Big( \big( \mathbf{x}_{(i)}, \mathbf{y}_{(i)}\big)_{i=1}^N ; \mathbf{\theta} \Big)
 $$
+* Note that the above is only true for arbitrarily small changes in a continuous space; in practice, we compute these parameters numerically, so the above condition is by no means guaranteed if $\mathscr{L}$ is not well-behaved.
 
 __training_data__: A set of (x, y) tuples representing the input-label pairs. Note that x has the dimensions of the input layer and y has the dimensions of the output layer. A tuple (x, y) represents a single observation.
 __epochs__: The number of times that we want to pass over the entire training set.
@@ -203,7 +206,8 @@ $$
 ... \\
 \frac{\partial L}{\partial b^l_{N_l}}
 \end{array}\right)
-$$ and
+$$
+and
 $$
 \nabla W^{l, l + 1}
 =
@@ -213,7 +217,8 @@ $$
 ... \\
 \frac{\partial L}{\partial w_{N_{l+1},1}}, \frac{\partial L}{\partial w_{N_{l+1},2}}, ..., \frac{\partial L}{\partial w_{N_{l+1},N_l}}
 \end{array}\right)
-$$.
+$$
+
 * The rest of the function follows.
 ```python
         # After the entire minibatch has been iterated over, update the
@@ -336,7 +341,6 @@ $$
 $$.
 
 * However, it is still not clear how we calculate $
-  \frac{\partial \mathscr{L}}{\partial b_{i}^{l}} = 
   \frac{\partial \mathscr{L}}{\partial a_i^l}
   \frac{\partial a_i^l}{\partial z_i^l}$ for each $i$ and $l$. 
 
@@ -354,3 +358,113 @@ $$
 INSERT DIAGRAM
 
 * To feed $\delta^L$ back one layer, we do the following matrix multiplication: $(W^{L-1,L})^T \delta^L$
+
+* Note that transposing the weight matrices lets us move activations in the opposite direction in the network.
+
+* At layer $L-1$, we want to know how $\delta^L$ is impacted by a small change in the net input of layer $L-1$. We can get this through the following equation:
+$$
+\delta^{L-1} = (W^{L-1,L})^T \delta^L \odot \sigma ' (z^{L-1})
+$$
+* In general, for any layer $l$, we have
+$$
+\delta^{l} = (W^{l,l+1})^T \delta^{l+1} \odot \sigma ' (z^{l})
+$$
+* So, we have now computed $\delta^l \forall l = 1...L$, now what?
+* Notice that 
+
+$$
+\frac{\partial{\mathscr{L}}}{\partial{a_i^L}} = \sigma(z_i^L - y^{(i)})
+$$
+* and
+
+$$
+\frac{\partial{a_i^L}}{\partial{z_i^L}} = \sigma ' (z_i^L)
+$$
+* so 
+
+$$
+\delta_i^L = \sigma(z_i^L - y^{(i)}) \sigma ' (z_i^L) = \frac{\partial{\mathscr{L}}}{\partial{a_i^L}} \frac{\partial{a_i^L}}{\partial{z_i^L}}
+$$
+
+* The first equality comes from our definition of $\delta^L_i$, but is for a single element of the vector $\delta^L$. The second equality comes from our observation of what each of these partial derivatives is equal to. 
+
+* Similarly, for layer $L-1$,
+$$
+\frac{\partial{\mathscr{L}}}{\partial{a_i^{L-1}}} = W_{i,j}^{L-1,L} \sigma(z_i^L - y^{(i)}) \sigma ' (z_i^L)
+$$
+* which, from our definition of $\delta_i^L$, can be rewritten as 
+
+$$
+\frac{\partial{\mathscr{L}}}{\partial{a_i^{L-1}}} = W_{i,j}^{L-1,L} \delta_i^L
+$$
+
+* and we also have
+
+$$
+\frac{\partial{a_i^{L-1}}}{\partial{z_i^{L-1}}} = \sigma ' (z_i^{L-1})
+$$
+
+* so
+
+$$
+\delta_i^{L-1} =W_{i,j}^{L-1,L} \delta_i^L \sigma ' (z_i^{L-1}) =\frac{\partial{\mathscr{L}}}{\partial{a_i^{L-1}}} \frac{\partial{a_i^{L-1}}}{\partial{z_i^{L-1}}}
+$$
+
+* If we keep moving through the layers of our network, we observe the following:
+
+$$
+\delta_i^{L-2} =W_{i,j}^{L-2,L-1} \delta_i^{L-1} \sigma ' (z_i^{L-2}) =\frac{\partial{\mathscr{L}}}{\partial{a_i^{L-2}}} \frac{\partial{a_i^{L-2}}}{\partial{z_i^{L-2}}}
+$$
+
+$$
+...
+$$
+
+$$
+\delta_i^{l} =W_{i,j}^{l,l+1} \delta_i^{l+1} \sigma ' (z_i^{l}) =\frac{\partial{\mathscr{L}}}{\partial{a_i^{l}}} \frac{\partial{a_i^{l}}}{\partial{z_i^{l}}}
+$$
+
+__Bottom Line__: since we have computed the "error" variable $\delta^l$ for each layer, we can calculate $
+\frac{\partial \mathscr{L}}{\partial a_i^l}
+\frac{\partial a_i^l}{\partial z_i^l}$ for each $i$ and $l$, which were the missing pieces of information that we need to compute every element of our gradient vectors. Once we have our gradient vectors, we can update the parameters of our model through gradient descent. 
+
+### Digression on Delta
+
+* We can rewrite $\delta^L = \nabla_a \mathscr{L} \odot \sigma ' (z^L)$ as follows:
+
+$$
+\delta^L = \mathbf{\Sigma} ' (z^L) \nabla \mathscr{L} 
+$$
+where
+
+$$
+\mathbf{\Sigma} ' (z^L)
+=
+\left(\begin{array}{cc} 
+\sigma ' (z_1^L), 0, ..., 0  \\ 
+0, \sigma ' (z_2^L), ..., 0 \\ 
+... \\
+0, 0, ..., \sigma ' (z_N^L)
+\end{array}\right)
+$$
+
+* We can also rewrite equation (2) as follows:
+$$
+\delta^l = \mathbf{\Sigma} ' (z^l) \big( \mathbf{W}^{l,l+1} \big)^T  \delta^{l+1} \forall l = 1, 2, ... , L-1
+$$
+
+* By using repeated substitution of the above equation for each $l$ , and also the equation for $\delta^L$, we can represent $\delta^l$ as follows for any $l$:
+
+$$
+\delta^l = \mathbf{\Sigma} ' (z^l) \big( \mathbf{W}^{l,l+1} \big)^T  \mathbf{\Sigma} ' (z^{l+1}) \big( \mathbf{W}^{l+1,l+2} \big)^T ... \mathbf{\Sigma} ' (z^{L-1}) \big( \mathbf{W}^{L-1, L} \big)^T \mathbf{\Sigma} ' (z^L) \nabla \mathscr{L} 
+$$
+
+$$
+\delta^l = \Big[ \prod_{j=l}^{L-1} \mathbf{\Sigma} ' (z^j) \big( \mathbf{W}^{j,j+1} \big)^T \Big] \mathbf{\Sigma} ' (z^L) \nabla \mathscr{L}
+$$
+
+* Note that the range of $\sigma$ is $(0,1)$, and the range of $\sigma '$ is a subset of $(0, 1)$ (Note that the logistic pdf is a class of probability distributions, so its range depends on how a specific pdf belonging to the logistic distribution class is parameterized).
+* This means that in the above chain product, if the number of layers gets large, there is a large chain product involving numbers in the set $(0,1)$. 
+* This means that as the number of layers increases, each entry in $\delta^l$ is getting multiplied by an increasingly small number.
+* So, if there are too many layers, $\delta^l \to \overrightarrow{0}$. Each element of $\nabla \mathscr{L}$ depends on $\delta^l_j$ (see equations below), so if each $\delta_j^l \to 0$, then $\nabla \mathscr{L} \to \overrightarrow{0}$. 
+* The above problem is called "gradient dampening", and it makes it hard for deep networks to learn because the paramters $\mathbf{\theta}$ never update in gradient descent.
