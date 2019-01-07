@@ -353,7 +353,8 @@ model.fit_generator(generator=training_generator,
                     epochs=8, callbacks=[tensorboard])
 
 import os
-model.save(os.path.join("C:\\Data\\toy_models","pos_model_1.h5"))
+save_path = "" # ENTER PATH TO SAVE MODEL OUTPUT
+model.save(os.path.join(save_path,"pos_model_1.h5"))
 
 
 os.path.dirname(os.path.realpath(__file__))
