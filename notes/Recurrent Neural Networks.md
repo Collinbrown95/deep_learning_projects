@@ -71,7 +71,7 @@ $$
 
 ![rnn_diagram_1](img/rnn_diagram_1.png)
 
-* In the example above, there are simple input vectors each containing 4 elements. Each input vector corresponds to a 3-element output vector. There is a hidden recurrent layer that has 2 elements, a 3 element output layer, and the loss function takes the predicted output and the true output in order to compute the loss associated with that particular time step. Notice that the same parameter tensors $\mathbf{U}$, $\mathbf{V}$, and $\mathbf{W}$ get reused at each time step. Note also that the above diagram does not illustrate the entry of bias vectors.
+* In the example above, there are simple input vectors each containing 4 elements. Each input vector corresponds to a 3-element output vector. There is a hidden recurrent layer that has 2 elements, a 3 element output layer, and the loss function takes the predicted output and the true output in order to compute the loss associated with that particular time step. Notice that the same parameter tensors $\mathbf{U}$, $\mathbf{V}$, and $\mathbf{W}​$ get reused at each time step. Note also that the above diagram does not illustrate the entry of bias vectors.
 
 ### Forward propagation of this RNN
 

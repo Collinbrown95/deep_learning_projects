@@ -21,10 +21,9 @@ from keras.callbacks import TensorBoard
 #==============================================================================
 # Folders
 #==============================================================================
-data_folder = r"F:\Learning\learning_machine_learning\neural_networks\data\\"
+data_folder = r"" # ENTER PATH TO DATA HERE
 train_path = os.path.join(data_folder, 'train.col')
 dev_path = os.path.join(data_folder, 'dev.col')
-test_path = os.path.join(data_folder, 'test-nolabels.col')
 
 #==============================================================================
 # Functions
@@ -117,7 +116,7 @@ def generate_features(X):
             # Is last word in sentence (If the token two positions ahead is "-BREAK-", then the token one position ahead
             # must be the punctuation that ends the sentence)
             try:
-                training_dict[idx]['is_last_word'] = bool(X[idx + 2] == "-BREAK-")
+                temp_dict[idx]['is_last_word'] = bool(X[idx + 2] == "-BREAK-")
             except:
                 pass
             # Is first word in sentence (note that this implementation changes in data Bethany sent)
@@ -203,7 +202,7 @@ class BatchGenerator(Sequence):
         self.feature_map = feature_map
         self.label_map = label_map
         self.mini_batch_size = mini_batch_size
-        self.mini_batches = self.prepare_mini_batches(X_train, y_train, mini_batch_size)
+        self.mini_batches = self.prepare_mini_batches(X_dict, y_dict, mini_batch_size)
     
     def __len__(self):
         ''' Returns number of batches per epoch.'''
@@ -294,9 +293,6 @@ train_data = import_col_data(train_path)
 train_data.columns = ['token', 'part_of_speech']
 dev_data = import_col_data(dev_path)
 dev_data.columns = ['token', 'part_of_speech']
-test_data = import_col_data(test_path)
-test_data.columns = ['token', 'part_of_speech']
-test_data = test_data['token']
 
 #train_data = train_data[:100000]
 X_train = list(train_data['token'])
@@ -321,7 +317,7 @@ training_generator = BatchGenerator(X_train, y_train, feature_map, label_map, mi
 test_generator = BatchGenerator(X_train, y_train, feature_map, label_map, mini_batch_size=512)
 
 # Clear all other variables from memory to save space
-del X_train, y_train, X_test, y_test, train_data, dev_data, test_data
+del X_train, y_train, X_test, y_test, train_data, dev_data
 
 
 #==============================================================================
@@ -329,7 +325,7 @@ del X_train, y_train, X_test, y_test, train_data, dev_data, test_data
 #==============================================================================
 NAME = 'POS-tagging-exercise-{}'.format(int(time()))
 
-current_dir = r"F:\Learning\learning_machine_learning\neural_networks"
+current_dir = r"" # ENTER PATH TO SAVE TENSORBOARD CALLBACK
 # Change current directory
 os.chdir(current_dir)
 #==============================================================================
