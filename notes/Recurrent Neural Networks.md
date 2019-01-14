@@ -93,6 +93,20 @@ $$
 \mathbf{\hat{y}}^{(t)} = \text{softmax}(\mathbf{o}^{(t)})
 $$
 
+* $\mathbf{b}$ and $\mathbf{c}$ are bias tensors that enter the hidden and output layers, respectively. $\mathbf{W}, \mathbf{U}, \text{and} \mathbf{V}$ are tensors of parameters that connect hidden-to-hidden recurrent layers, input-to-hidden layers, and hidden-to-output layers, respectively. 
+* We can think about a loss function $\mathscr{L}$ over this sequence of input-output pairs $\{\mathbf{x}^{(1)}, ...,\mathbf{x}^{(\tau)}\}; \{\mathbf{y}^{(1)}, ...,\mathbf{y}^{(\tau)}\}$; i.e. $\mathscr{L} \big(\{\mathbf{x}^{(1)}, ...,\mathbf{x}^{(\tau)}\}, \{\mathbf{y}^{(1)}, ...,\mathbf{y}^{(\tau)}\}; \mathbf{\theta} \big)$, where $\mathbf{\theta}$ is a parameter tensor. 
+* For a given $t$, we have $\mathscr{L}^{(t)}$, which can be defined as the negative log likelihood of $y^{(t)} | \{\mathbf{x}^{(1)}, ...,\mathbf{x}^{(\tau)}\}$, i.e. $-\text{log} p_{\text{model}} \big( y^{(t)} | \{\mathbf{x}^{(1)}, ...,\mathbf{x}^{(\tau)}\} \big)$.
+* Since we are trying to predict an output $o^{(t)}$ that is as close as possible to the true value corresponding to $x^{(t)}$ (i.e. $y^{(t)})$, we want to make this conditional probability as high as possible (i.e. make the negative log of the probability as low as possible). 
+* The total loss function can be thought of as simply summing the losses for each $\mathscr{L}^{(t)}$. 
+
+$$
+\mathscr{L} = \sum_t \mathscr{L}^{(t)} = -\sum_t \text{log} p_{\text{model}} \big( y^{(t)} | \{\mathbf{x}^{(1)}, ...,\mathbf{x}^{(\tau)}\} \big)
+$$
+
+* Calculating the gradient of $\mathscr{L}$ is expensive. To compute this gradient, we must do a forward pass through the recurrent neural network (left to right), and then a backward pass through the network (right to left).
+* Further, we have to keep each state from the forward pass in memory for back-propagation.
+* This means that both the time and space complexity of this RNN are $O(\tau)$ (i.e. computation time and memory requirements are proportional to the number of examples in the training sequence).
+* Note that this time/space complexity cannot be improved through parallelization because the computations involved are inherently sequential. 
 * 
 
 ## Further Reading
