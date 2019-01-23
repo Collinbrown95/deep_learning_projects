@@ -107,7 +107,26 @@ $$
 * Further, we have to keep each state from the forward pass in memory for back-propagation.
 * This means that both the time and space complexity of this RNN are $O(\tau)$ (i.e. computation time and memory requirements are proportional to the number of examples in the training sequence).
 * Note that this time/space complexity cannot be improved through parallelization because the computations involved are inherently sequential. 
-* 
+
+### Backpropagation Through Time (BPTT)
+
+* BPTT is procedurally similar to traditional backpropagation, but now we back-propagate through the computational graph across $\tau$ periods. 
+
+* We first note the following:
+  $$
+  (\nabla_{o^{(t)}} \mathscr{L}) = \frac{\partial \mathscr{L}^{(t)}}{\partial o_i^{(t)}}=\frac{\partial \mathscr{L}}{\partial \mathscr{L}^{(t)}}\frac{\partial \mathscr{L}^{(t)}}{\partial o_i^{(t)}}=\hat{y}^{(t)}_i - \mathbf{1}_{i=y^{(t)}}
+  $$
+
+* The way that the total loss ($\mathscr{L}$) changes with respect to the output at each node depends on whether the value that was predicted at that node was correct. So if the above expression was correct, the loss for that node is $0$, otherwise it is $1$. 
+* Next, we note that the way that $\mathscr{L}$ changes with respect to the hidden layer at the terminal node ($\tau$) depends only on how $h^{(\tau)}$ affects $\mathscr{L}$ through $o^{(\tau)}$. 
+
+$$
+(\nabla_{o^{(t)}} \mathscr{L})
+$$
+
+* Finally, we can compute the parameter gradients using $\nabla_{o^{(t)}} \mathscr{L}$ and $\nabla_{h^{(t)}} \mathscr{L}$ as follows:
+
+
 
 ## Further Reading
 
