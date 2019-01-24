@@ -1,0 +1,4 @@
+glove.6B.100d.txt
+test.txt
+train.txt
+valid.txt
