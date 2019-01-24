@@ -126,6 +126,26 @@ $$
 
 * Finally, we can compute the parameter gradients using $\nabla_{o^{(t)}} \mathscr{L}$ and $\nabla_{h^{(t)}} \mathscr{L}$ as follows:
 
+< insert equations>
+
+* Since recurrent neural networks implement parameter sharing, it can be more difficult to optimize the parameters of the RNN
+
+* Need to understand how to draw samples from the model. 
+
+* RNN needs mechanism for determining the length of a particular sequence (since sequence lengths can vary) 
+
+Ways to do this:
+
+1. create and add a special symbol from the vocabulary that corresponds to the end of a sequence – when this symbol is generated, the sampling stops
+
+2. add an extra Bernoulli output to the model that represents the decision to either halt generation or continue generation at each time step
+
+3. predict $\tau$ directly  and include an input indicating how many steps are left in the sequence
+
+
+
+## Long Short Term Memory (LSTM)
+
 
 
 ## Further Reading
