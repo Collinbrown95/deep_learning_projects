@@ -380,7 +380,7 @@ for epoch in range(epochs):
     a = Progbar(len(train_batch_len))
     for i,batch in enumerate(iterate_minibatches(train_batch,train_batch_len)):
         labels, tokens, casing,char = batch       
-        model.train_on_batch([tokens, casing,char], labels, verbose=1)
+        model.train_on_batch([tokens, casing,char], labels)
         a.update(i)
     print(' ')
 
