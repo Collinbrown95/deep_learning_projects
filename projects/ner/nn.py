@@ -264,7 +264,7 @@ def compute_precision(guessed_sentences, correct_sentences):
 # =============================================================================
 # Parameters
 # =============================================================================
-epochs = 10
+epochs = 15
 # =============================================================================
 # Code
 # =============================================================================
@@ -291,7 +291,14 @@ for label in labelSet:
     label2Idx[label] = len(label2Idx)
 
 # :: Hard coded case lookup ::
-case2Idx = {'numeric': 0, 'allLower':1, 'allUpper':2, 'initialUpper':3, 'other':4, 'mainly_numeric':5, 'contains_digit': 6, 'PADDING_TOKEN':7}
+case2Idx = {'numeric': 0, 
+            'allLower':1, 
+            'allUpper':2, 
+            'initialUpper':3, 
+            'other':4, 
+            'mainly_numeric':5, 
+            'contains_digit': 6, 
+            'PADDING_TOKEN':7}
 caseEmbeddings = np.identity(len(case2Idx), dtype='float32')
 
 
@@ -299,7 +306,7 @@ caseEmbeddings = np.identity(len(case2Idx), dtype='float32')
 word2Idx = {}
 wordEmbeddings = []
 
-fEmbeddings = open(os.path.join(EMB_PATH, "glove.6B.100d.txt"), encoding="utf-8")
+fEmbeddings = open(os.path.join(EMB_PATH, "glove.6B.200d.txt"), encoding="utf-8")
 
 for line in fEmbeddings:
     split = line.strip().split(" ")
@@ -321,13 +328,26 @@ for line in fEmbeddings:
         
 wordEmbeddings = np.array(wordEmbeddings)
 
-char2Idx = {"PADDING":0, "UNKNOWN":1}
+char2Idx = {"PADDING":0, 
+            "UNKNOWN":1}
 for c in " 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,-_()[]{}!?:;#'\"/\\%$`&=*+@^~|":
     char2Idx[c] = len(char2Idx)
 
-train_set = padding(createMatrices(trainSentences,word2Idx,  label2Idx, case2Idx,char2Idx))
-dev_set = padding(createMatrices(devSentences,word2Idx, label2Idx, case2Idx,char2Idx))
-test_set = padding(createMatrices(testSentences, word2Idx, label2Idx, case2Idx,char2Idx))
+train_set = padding(createMatrices(trainSentences,
+                                   word2Idx,  
+                                   label2Idx, 
+                                   case2Idx,
+                                   char2Idx))
+dev_set = padding(createMatrices(devSentences,
+                                 word2Idx, 
+                                 label2Idx, 
+                                 case2Idx,
+                                 char2Idx))
+test_set = padding(createMatrices(testSentences, 
+                                  word2Idx, 
+                                  label2Idx, 
+                                  case2Idx,
+                                  char2Idx))
 
 idx2Label = {v: k for k, v in label2Idx.items()}
 
@@ -345,7 +365,7 @@ casing_input = Input(shape=(None,), dtype='int32', name='casing_input')
 casing = Embedding(output_dim=caseEmbeddings.shape[1], 
                    input_dim=caseEmbeddings.shape[0], 
                    weights=[caseEmbeddings], 
-                   trainable=False)(casing_input)
+                   trainable=True)(casing_input)
 character_input=Input(shape=(None,52,),name='char_input')
 embed_char_out=TimeDistributed(Embedding(len(char2Idx),
                                          30,
